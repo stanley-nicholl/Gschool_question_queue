@@ -1,0 +1,23 @@
+body {
+  box-sizing: border-box;
+  font-size: 16px;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+#queueSpot {
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  border-radius: 15px;
+}
+
+.jumbotron {
+  /*height: 33vh;*/
+  padding-top: 4rem;
+  padding-bottom: 6rem;
+}
+
+#list {
+  background-color: #f28d20;
+  color: #fff;
+}
