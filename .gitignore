@@ -3,3 +3,4 @@ node_modules/
 dist/
 bundle.js
 CNAME
+scripts/config.js
