@@ -36,13 +36,13 @@ function getRequests (requestID) {
   // console.log(requests)
 }
 
-function getAllRequests() {
+function getAllRequests () {
   database.ref('requests/').once('value').then(snapshot => {
     let result = snapshot.val()
-    result.forEach(function(item) {
+    result.forEach(function (item) {
       // console.log(item)
-      const newListItem = document.createElement("LI")
-      newListItem.className = "row entry py-2"
+      const newListItem = document.createElement('LI')
+      newListItem.className = 'row entry py-2'
       newListItem.innerHTML = `
       <div class="col-md-1 d-flex justify-content-center align-items-center">
         <p class="element queueNum">${item._id}</p>
@@ -64,5 +64,4 @@ function getAllRequests() {
 
 getAllRequests()
 
-
-// getRequests(3)
+getRequests(3)
