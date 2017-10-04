@@ -24,12 +24,13 @@
 
   <nav class="navbar navbar-light bg-light py-4">
     <a class="navbar-brand" href="#">
-      <img src="styles/images/nicky_cage.jpeg" width="30" height="30" class="d-inline-block align-top" alt="">
+      <img src="styles/images/nicky_cage.jpeg" width="40" height="40" class="d-inline-block align-middle" alt="">
       ASKIFY
     </a>
-    <div class="right-side d-flex">
-      <div id="queueSpot" class="bg-success text-white text-center mr-3">6</div>
-      <a class="archived" href="#"><span class="align-middle">Archived Asks</span></a>
+    <div class="right-side d-flex align-items-center">
+      <p class="mr-3 mb-0">Hello, Stan</p>
+      <div id="queueSpot" class="bg-success text-white text-center mr-3">2</div>
+      <a class="archived mb-0" href="#">Archived Asks</a>
     </div>
   </nav>
 
@@ -38,12 +39,12 @@
       <h1 class="mb-4 text-white text-center">Ask and ye shall receive.</h1>
       <div class="d-flex justify-content-around">
         <input class="form-control form-control-lg mr-5 py-3" type="text" placeholder="What would you like help with?">
-        <button type="button" class="btn btn-light btn-lg py-3 px-5">Askify!</button>
+        <button type="button" class="btn btn-light btn-lg py-3 px-3">Add me to the queue!</button>
       </div>
     </div>
   </div>
 
-  <div id="list">
+  <div id="list-head">
     <div class="container">
       <div class="header row mt-0 py-3">
         <div class="col-md-1 d-flex justify-content-center">
@@ -56,13 +57,13 @@
           <h3>Topic</h3>
         </div>
         <div class="col-md-2 d-flex justify-content-center">
-          <h3>Resolved</h3>
+          <h3>Answered</h3>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="container">
+  <div class="container list">
     <div class="row entry py-2">
       <div class="col-md-1 d-flex justify-content-center align-items-center">
         <p class="element queueNum">1</p>
@@ -74,7 +75,7 @@
         <p class="element topic">Brooklyn fixie XOXO, listicle microdosing intelligentsia succulents iceland scenester distillery forage williamsburg vaporware. Chia knausgaard jianbing, deep v viral photo booth fanny pack.</p>
       </div>
       <div class="col-md-2 d-flex align-items-center justify-content-center">
-        <p class="element resolve"><i class="fa fa-minus-circle" aria-hidden="true"></i></p>
+        <p class="element resolve"><i class="fa fa-check-circle" aria-hidden="true"></i></p>
       </div>
     </div>
     <div class="row entry py-2">
@@ -88,7 +89,7 @@
         <p class="element topic">Brooklyn fixie XOXO, listicle microdosing intelligentsia succulents iceland scenester distillery forage williamsburg vaporware. Chia knausgaard jianbing, deep v viral photo booth fanny pack.</p>
       </div>
       <div class="col-md-2 d-flex align-items-center justify-content-center">
-        <p class="element resolve"><i class="fa fa-minus-circle" aria-hidden="true"></i></p>
+        <p class="element resolve"><i class="fa fa-check-circle" aria-hidden="true"></i></p>
       </div>
     </div>
   </div>
