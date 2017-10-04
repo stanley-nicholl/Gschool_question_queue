@@ -4,11 +4,26 @@ body {
   font-family: 'Ubuntu', sans-serif;
 }
 
+.navbar-brand {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #007bff !important;
+}
+
 #queueSpot {
   height: 30px;
   width: 30px;
   line-height: 30px;
   border-radius: 15px;
+}
+
+.archived {
+  font-size: .9rem;
+  text-decoration: underline;
+}
+
+nav p {
+  font-size: 1rem;
 }
 
 .jumbotron {
@@ -21,7 +36,7 @@ body {
   color: #f28d20;
 }
 
-#list {
+#list-head {
   background-color: #f28d20;
   color: #fff;
 }
@@ -30,12 +45,13 @@ body {
   border-bottom: 1px solid #a6a6a6;
 }
 
-p {
+.list p {
   margin-bottom: 0;
   color: #a6a6a6;
+  font-size: .8rem;
 }
 
 .resolve i {
   font-size: 1.8rem;
-  color: red;
+  color: green;
 }
