@@ -17,7 +17,25 @@ body {
   padding-bottom: 6rem;
 }
 
+.btn-light {
+  color: #f28d20;
+}
+
 #list {
   background-color: #f28d20;
   color: #fff;
+}
+
+.entry {
+  border-bottom: 1px solid #a6a6a6;
+}
+
+p {
+  margin-bottom: 0;
+  color: #a6a6a6;
+}
+
+.resolve i {
+  font-size: 1.8rem;
+  color: red;
 }
