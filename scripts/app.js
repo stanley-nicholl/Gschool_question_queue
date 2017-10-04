@@ -5,6 +5,10 @@ const firebase = require('firebase')
 firebase.initializeApp(config)
 let user = firebase.auth().currentUser
 
+let database = firebase.database()
+
+database.connect()
+
 if (user) {
   console.log('Someone is signed in!')
 } else {
