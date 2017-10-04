@@ -1,16 +1,39 @@
-const css = require('../styles/app.scss') // eslint-disable-line
+// const css = require('../styles/app.scss') // eslint-disable-line
 const config = require('./config')
 const firebase = require('firebase')
 
 firebase.initializeApp(config)
-let user = firebase.auth().currentUser
+// let user = firebase.auth().currentUser
 
 let database = firebase.database()
 
-database.connect()
+let name, request
 
-if (user) {
-  console.log('Someone is signed in!')
-} else {
-  console.log('No one is currently signed in.')
+function getRequests (requestID) {
+  database.ref('requests/' + requestID).once('value').then(snapshot => {
+    let result = snapshot.val()
+    console.log(snapshot.val())
+    name = result.name
+    request = result.question
+    console.log('name', name, 'request', request)
+
+    const element = document.getElementById('queue1')
+    element.innerHTML = `
+        <div class="col-md-1 d-flex justify-content-center align-items-center">
+          <p class="element queueNum">${requestID}</p>
+        </div>
+        <div class="col-md-3 d-flex align-items-center">
+          <p class="element name">${name}</p>
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+          <p class="element topic">${request}</p>
+        </div>
+        <div class="col-md-2 d-flex align-items-center justify-content-center">
+          <p class="element resolve"><i class="fa fa-check-circle" aria-hidden="true"></i></p>
+        </div>
+      `
+  })
+  // console.log(requests)
 }
+
+getRequests(2)
