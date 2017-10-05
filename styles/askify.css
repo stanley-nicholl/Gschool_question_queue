@@ -22,12 +22,16 @@ body {
   text-decoration: underline;
 }
 
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
 nav p {
   font-size: 1rem;
 }
 
 .jumbotron {
-  /*height: 33vh;*/
   padding-top: 4rem;
   padding-bottom: 6rem;
 }
@@ -41,17 +45,27 @@ nav p {
   color: #fff;
 }
 
-.entry {
-  border-bottom: 1px solid #a6a6a6;
+ul {
+  padding-left: 0;
+  padding-right: 0;
 }
 
-.list p {
+li {
+  list-style: none;
+  padding-top: 0;
+  border-bottom: 1px #c4c4c4 solid;
+}
+
+.list li p {
   margin-bottom: 0;
   color: #a6a6a6;
   font-size: .8rem;
 }
 
-.resolve i {
-  font-size: 1.8rem;
-  color: green;
+.item-button {
+  width: 85%;
+}
+
+.hidden {
+  display: none;
 }
