@@ -1,55 +1,33 @@
 // const css = require('../styles/app.scss') // eslint-disable-line
 const config = require('./config').config
-
-const uiconfig = require('./config').uiconfig
-
-console.log(uiconfig)
-
+// const uiconfig = require('./config').uiconfig
+// console.log(uiconfig)
 const firebase = require('firebase')
 // const firebaseui = require('firebaseui')
 
 firebase.initializeApp(config)
 // let user = firebase.auth().currentUser
-
 let database = firebase.database()
 
-let name, request
-
-function getRequests (requestID) {
-  database.ref('requests/' + requestID).once('value').then(snapshot => {
-    let result = snapshot.val()
-    // console.log(snapshot.val())
-    name = result.name
-    request = result.question
-    // console.log('name', name, 'request', request)
-
-    const element = createNewListItem(requestID, name, request)
-    document.getElementById('queue').appendChild(element)
-  })
-  // console.log(requests)
-}
-
 function getAllRequests () {
-  database.ref('requests/').once('value').then(snapshot => {
+  database.ref('requests/').on('value', snapshot => {
     let result = snapshot.val()
-    if (result.length > 1) {
-      result.forEach(function (item) {
-        document.getElementById('queue').appendChild(createNewListItem(item._id, item.name, item.question))
-      })
-    } else {
-      const key = Object.keys(result)
-      console.log(result[key])
-      document.getElementById('queue').appendChild(createNewListItem(result[key]._id, result[key].name, result[key].question))
-    }
+    const ids = Object.keys(result)
+    const queue = document.getElementById('queue')
+    queue.innerHTML = ''
+    ids.forEach((id, index) => {
+      const item = result[id]
+      queue.appendChild(createNewListItem(index + 1, item.name, item.question))
+    })
   })
 }
 
-function createNewListItem (id, name, question) {
+function createNewListItem (index, name, question) {
   const newListItem = document.createElement('LI')
   newListItem.className = 'row entry py-2'
   newListItem.innerHTML = `
     <div class="col-md-1 d-flex justify-content-center align-items-center">
-      <p class="element queueNum">${id}</p>
+      <p class="element queueNum">${index}</p>
     </div>
     <div class="col-md-3 d-flex align-items-center">
       <p class="element name">${name}</p>
@@ -71,11 +49,21 @@ function createNewListItem (id, name, question) {
 //   })
 // }
 
-function writeRequestData (requestId, name, question) {
-  database.ref('requests/' + requestId).set({
-    _id: requestId,
-    name: name,
-    question: question,
+// function writeRequestData (requestId, name, question) {
+//   database.ref('requests/' + requestId).set({
+//     _id: requestId,
+//     name: name,
+//     question: question,
+//     resolved: false
+//   })
+// }
+
+function submitMessage (messageContent, userName) {
+  let uid = 60
+  database.ref('requests/' + uid).set({
+    _id: uid,
+    name: userName,
+    question: messageContent,
     resolved: false
   })
 }
@@ -84,8 +72,18 @@ function writeRequestData (requestId, name, question) {
 
 if (window.route === 'index') {
   // do login page stuff
+
 } else if (window.route === 'askify') {
+  let userInfo = JSON.parse(window.localStorage.getItem('user'))
+  const submitButton = document.getElementById('add-request')
+  const messageTextField = document.getElementById('message-text')
+  submitButton.addEventListener('click', e => {
+    let messageText = messageTextField.value
+    if (messageText !== '') {
+      submitMessage(messageText, userInfo.fname)
+      console.log('message submitted')
+      messageTextField.value = ''
+    }
+  })
   getAllRequests()
-  writeRequestData(5, 'Kat', 'Another silly request from Atom ')
-  getRequests(5)
 }
