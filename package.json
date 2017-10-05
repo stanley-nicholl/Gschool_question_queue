@@ -22,14 +22,17 @@
     "start": "watchify ./scripts/app.js -o ./scripts/bundle.js & live-server .",
     "build": "node build.js",
     "prod": "live-server dist/",
+    "test": "mocha",
     "deploy": "npm run lint && npm run build && surge -p ./dist -d \"$(< CNAME)\""
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
     "babelify": "^7.3.0",
     "browserify": "^14.4.0",
+    "chai": "^4.1.2",
     "fs-extra": "^4.0.2",
     "live-server": "^1.2.0",
+    "mocha": "^4.0.0",
     "scssify": "^2.3.0",
     "snazzy": "^7.0.0",
     "standard": "^10.0.3",
