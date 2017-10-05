@@ -15,15 +15,17 @@ function getAllRequests () {
     const ids = Object.keys(result)
     const queue = document.getElementById('queue')
     queue.innerHTML = ''
-    ids.forEach((id, index) => {
+    const openQuestions = ids.filter(id => !result[id].resolved)
+    openQuestions.forEach((id, index) => {
       const item = result[id]
-      queue.appendChild(createNewListItem(index + 1, item.name, item.question))
+      queue.appendChild(createNewListItem(id, index + 1, item.name, item.question))
     })
   })
 }
 
-function createNewListItem (index, name, question) {
+function createNewListItem (id, index, name, question) {
   const newListItem = document.createElement('LI')
+  newListItem.id = id
   newListItem.className = 'row entry py-2'
   newListItem.innerHTML = `
     <div class="col-md-1 d-flex justify-content-center align-items-center">
@@ -39,6 +41,7 @@ function createNewListItem (index, name, question) {
       <p class="element resolve"><i class="fa fa-check-circle" aria-hidden="true"></i></p>
     </div>
     `
+
   return newListItem
 }
 
@@ -59,7 +62,7 @@ function createNewListItem (index, name, question) {
 // }
 
 function submitMessage (messageContent, userName) {
-  let uid = 60
+  let uid = Date.now() + userName
   database.ref('requests/' + uid).set({
     _id: uid,
     name: userName,
@@ -72,6 +75,10 @@ function submitMessage (messageContent, userName) {
     console.error(error)
   })
 }
+// 
+// function markAsResolved (id) {
+//
+// }
 
 // writeUserData(2, "Stan N.", 'stan@example.com')
 
