@@ -13,34 +13,39 @@ firebase.initializeApp(config)
 
 let database = firebase.database()
 
-let name, request
+// let name, request
 
-function getRequests (requestID) {
-  database.ref('requests/' + requestID).once('value').then(snapshot => {
-    let result = snapshot.val()
-    // console.log(snapshot.val())
-    name = result.name
-    request = result.question
-    // console.log('name', name, 'request', request)
+// const requestsRef = database.ref('requests/')
+// requestsRef.on('value', snapshot => {
+//   let result = snapshot.val()
+//   const ids = Object.keys(result)
+//   ids.forEach(id => {
+//     const item = result[id]
+//     document.getElementById('queue').innerHTML = ""
+//     document.getElementById('queue').appendChild(createNewListItem(item._id, item.name, item.question))
+//   })
+// })
 
-    const element = createNewListItem(requestID, name, request)
-    document.getElementById('queue').appendChild(element)
-  })
-  // console.log(requests)
-}
+// function getRequests (requestID) {
+//   database.ref('requests/' + requestID).on('value', snapshot => {
+//     let result = snapshot.val()
+//     name = result.name
+//     request = result.question
+//     const element = createNewListItem(requestID, name, request)
+//     document.getElementById('queue').appendChild(element)
+//   })
+// }
 
 function getAllRequests () {
-  database.ref('requests/').once('value').then(snapshot => {
+  database.ref('requests/').on('value', snapshot => {
     let result = snapshot.val()
-    if (result.length > 1) {
-      result.forEach(function (item) {
-        document.getElementById('queue').appendChild(createNewListItem(item._id, item.name, item.question))
-      })
-    } else {
-      const key = Object.keys(result)
-      console.log(result[key])
-      document.getElementById('queue').appendChild(createNewListItem(result[key]._id, result[key].name, result[key].question))
-    }
+    const ids = Object.keys(result)
+    const queue = document.getElementById('queue')
+    queue.innerHTML = ''
+    ids.forEach(id => {
+      const item = result[id]
+      queue.appendChild(createNewListItem(item._id, item.name, item.question))
+    })
   })
 }
 
@@ -71,14 +76,14 @@ function createNewListItem (id, name, question) {
 //   })
 // }
 
-function writeRequestData (requestId, name, question) {
-  database.ref('requests/' + requestId).set({
-    _id: requestId,
-    name: name,
-    question: question,
-    resolved: false
-  })
-}
+// function writeRequestData (requestId, name, question) {
+//   database.ref('requests/' + requestId).set({
+//     _id: requestId,
+//     name: name,
+//     question: question,
+//     resolved: false
+//   })
+// }
 
 // writeUserData(2, "Stan N.", 'stan@example.com')
 
@@ -86,6 +91,6 @@ if (window.route === 'index') {
   // do login page stuff
 } else if (window.route === 'askify') {
   getAllRequests()
-  writeRequestData(5, 'Kat', 'Another silly request from Atom ')
-  getRequests(5)
+  // writeRequestData(5, 'Kat', 'Another silly request from Atom ')
+  // getRequests(5)
 }
