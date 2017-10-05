@@ -65,10 +65,10 @@ function submitMessage (messageContent, userName) {
     name: userName,
     question: messageContent,
     resolved: false
-  }).then(function() {
+  }).then(function () {
     // popup the success
-    console.log("submitted successfully")
-  }).catch(function(error) {
+    console.log('submitted successfully')
+  }).catch(function (error) {
     console.error(error)
   })
 }
