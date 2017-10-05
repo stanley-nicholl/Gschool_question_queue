@@ -80,10 +80,10 @@ function markAsResolved (id, resolutionMessage) {
   database.ref('requests/' + id).update({
     resolved: true
   }).then(function () {
-    database.ref('requests/' + id).once('value', function(snapshot) {
+    database.ref('requests/' + id).once('value', function (snapshot) {
       database.ref('archive/' + id).set(snapshot.val())
       database.ref('archive/' + id).update({'resolution': resolutionMessage})
-    }).then(function() {
+    }).then(function () {
       // database.ref('requests/' + id).set(null)
     })
   }).catch(function (err) {
@@ -91,8 +91,8 @@ function markAsResolved (id, resolutionMessage) {
   })
 }
 
-function displayArchivedQuestions() {
-  database.ref('archive/').on('value', function(snapshot) {
+function displayArchivedQuestions () {
+  database.ref('archive/').on('value', function (snapshot) {
     let result = snapshot.val()
     const ids = Object.keys(result)
     const archive = document.getElementById('archive')
@@ -126,8 +126,7 @@ if (window.route === 'index') {
   })
   getAllRequests()
 
-  markAsResolved('1507242473577Kat', "Iceland beard hoodie, fashion axe four loko blog typewriter kitsch master cleanse scenester.")
+  markAsResolved('1507242473577Kat', 'Iceland beard hoodie, fashion axe four loko blog typewriter kitsch master cleanse scenester.')
 } else if (window.route === 'archive') {
-
   displayArchivedQuestions()
 }
