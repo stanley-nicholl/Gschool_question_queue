@@ -16,5 +16,6 @@ submit.addEventListener('click', function (e) {
   userInfo['lname'] = document.getElementById('lname').value
   userInfo['email'] = document.getElementById('email').value
   window.localStorage.setItem('repeatUser', 'yes')
+  window.localStorage.setItem('user', JSON.stringify(userInfo))
   window.location.href = 'askify.html'
 })

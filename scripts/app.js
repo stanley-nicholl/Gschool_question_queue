@@ -1,40 +1,13 @@
 // const css = require('../styles/app.scss') // eslint-disable-line
 const config = require('./config').config
-
-const uiconfig = require('./config').uiconfig
-
-console.log(uiconfig)
-
+// const uiconfig = require('./config').uiconfig
+// console.log(uiconfig)
 const firebase = require('firebase')
 // const firebaseui = require('firebaseui')
 
 firebase.initializeApp(config)
 // let user = firebase.auth().currentUser
-
 let database = firebase.database()
-
-// let name, request
-
-// const requestsRef = database.ref('requests/')
-// requestsRef.on('value', snapshot => {
-//   let result = snapshot.val()
-//   const ids = Object.keys(result)
-//   ids.forEach(id => {
-//     const item = result[id]
-//     document.getElementById('queue').innerHTML = ""
-//     document.getElementById('queue').appendChild(createNewListItem(item._id, item.name, item.question))
-//   })
-// })
-
-// function getRequests (requestID) {
-//   database.ref('requests/' + requestID).on('value', snapshot => {
-//     let result = snapshot.val()
-//     name = result.name
-//     request = result.question
-//     const element = createNewListItem(requestID, name, request)
-//     document.getElementById('queue').appendChild(element)
-//   })
-// }
 
 function getAllRequests () {
   database.ref('requests/').on('value', snapshot => {
@@ -42,19 +15,19 @@ function getAllRequests () {
     const ids = Object.keys(result)
     const queue = document.getElementById('queue')
     queue.innerHTML = ''
-    ids.forEach(id => {
+    ids.forEach((id, index) => {
       const item = result[id]
-      queue.appendChild(createNewListItem(item._id, item.name, item.question))
+      queue.appendChild(createNewListItem(index + 1, item.name, item.question))
     })
   })
 }
 
-function createNewListItem (id, name, question) {
+function createNewListItem (index, name, question) {
   const newListItem = document.createElement('LI')
   newListItem.className = 'row entry py-2'
   newListItem.innerHTML = `
     <div class="col-md-1 d-flex justify-content-center align-items-center">
-      <p class="element queueNum">${id}</p>
+      <p class="element queueNum">${index}</p>
     </div>
     <div class="col-md-3 d-flex align-items-center">
       <p class="element name">${name}</p>
@@ -76,21 +49,43 @@ function createNewListItem (id, name, question) {
 //   })
 // }
 
-// function writeRequestData (requestId, name, question) {
-//   database.ref('requests/' + requestId).set({
-//     _id: requestId,
-//     name: name,
-//     question: question,
-//     resolved: false
-//   })
-// }
+function writeRequestData (requestId, name, question) {
+  database.ref('requests/' + requestId).set({
+    _id: requestId,
+    name: name,
+    question: question,
+    resolved: false
+  })
+}
+
+function submitMessage(messageContent, userName) {
+  let uid = 60
+  database.ref('requests/' + uid).set({
+    _id: uid,
+    name: userName,
+    question: messageContent,
+    resolved: false
+  })
+}
 
 // writeUserData(2, "Stan N.", 'stan@example.com')
 
 if (window.route === 'index') {
   // do login page stuff
+
 } else if (window.route === 'askify') {
+
+  let userInfo = JSON.parse(window.localStorage.getItem('user'))
+  const submitButton = document.getElementById('add-request')
+  const messageTextField = document.getElementById('message-text')
+  submitButton.addEventListener('click', e => {
+    let messageText = messageTextField.value
+    if(messageText !== "") {
+      submitMessage(messageText, userInfo.fname)
+      console.log('message submitted')
+      messageTextField.value = ""
+    }
+  })
   getAllRequests()
-  // writeRequestData(5, 'Kat', 'Another silly request from Atom ')
-  // getRequests(5)
+
 }
