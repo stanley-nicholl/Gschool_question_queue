@@ -70,15 +70,39 @@ function submitMessage (messageContent, userName) {
     resolved: false
   }).then(function () {
     // popup the success
-    console.log('submitted successfully')
+
   }).catch(function (error) {
     console.error(error)
   })
 }
-//
-// function markAsResolved (id) {
-//
-// }
+
+function markAsResolved (id, resolutionMessage) {
+  database.ref('requests/' + id).update({
+    resolved: true
+  }).then(function () {
+    database.ref('requests/' + id).once('value', function(snapshot) {
+      database.ref('archive/' + id).set(snapshot.val())
+      database.ref('archive/' + id).update({'resolution': resolutionMessage})
+    }).then(function() {
+      // database.ref('requests/' + id).set(null)
+    })
+  }).catch(function (err) {
+    console.error(err)
+  })
+}
+
+function displayArchivedQuestions() {
+  database.ref('archive/').on('value', function(snapshot) {
+    let result = snapshot.val()
+    const ids = Object.keys(result)
+    const archive = document.getElementById('archive')
+    archive.innerHTML = ''
+    ids.forEach((id, index) => {
+      const item = result[id]
+      archive.appendChild(createNewListItem(id, index + 1, item.name, item.question))
+    })
+  })
+}
 
 // writeUserData(2, "Stan N.", 'stan@example.com')
 
@@ -101,6 +125,9 @@ if (window.route === 'index') {
     }
   })
   getAllRequests()
+
+  markAsResolved('1507242473577Kat', "Iceland beard hoodie, fashion axe four loko blog typewriter kitsch master cleanse scenester.")
 } else if (window.route === 'archive') {
-  // do archive stuff
+
+  displayArchivedQuestions()
 }
