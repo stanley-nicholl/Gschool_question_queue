@@ -49,16 +49,16 @@ function createNewListItem (index, name, question) {
 //   })
 // }
 
-function writeRequestData (requestId, name, question) {
-  database.ref('requests/' + requestId).set({
-    _id: requestId,
-    name: name,
-    question: question,
-    resolved: false
-  })
-}
+// function writeRequestData (requestId, name, question) {
+//   database.ref('requests/' + requestId).set({
+//     _id: requestId,
+//     name: name,
+//     question: question,
+//     resolved: false
+//   })
+// }
 
-function submitMessage(messageContent, userName) {
+function submitMessage (messageContent, userName) {
   let uid = 60
   database.ref('requests/' + uid).set({
     _id: uid,
@@ -74,18 +74,16 @@ if (window.route === 'index') {
   // do login page stuff
 
 } else if (window.route === 'askify') {
-
   let userInfo = JSON.parse(window.localStorage.getItem('user'))
   const submitButton = document.getElementById('add-request')
   const messageTextField = document.getElementById('message-text')
   submitButton.addEventListener('click', e => {
     let messageText = messageTextField.value
-    if(messageText !== "") {
+    if (messageText !== '') {
       submitMessage(messageText, userInfo.fname)
       console.log('message submitted')
-      messageTextField.value = ""
+      messageTextField.value = ''
     }
   })
   getAllRequests()
-
 }
