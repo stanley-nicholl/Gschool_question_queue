@@ -75,7 +75,7 @@ function submitMessage (messageContent, userName) {
     console.error(error)
   })
 }
-// 
+//
 // function markAsResolved (id) {
 //
 // }
