@@ -37,7 +37,7 @@
     "watchify": "^3.9.0"
   },
   "dependencies": {
-    "bulma": "^0.5.3",
-    "firebase": "^4.5.0"
+    "firebase": "^4.5.0",
+    "firebaseui": "^2.3.0"
   }
 }
