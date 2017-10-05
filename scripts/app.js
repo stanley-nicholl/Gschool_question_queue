@@ -21,15 +21,15 @@ function getAllRequests () {
       queue.appendChild(createNewListItem(id, index + 1, item.name, item.question))
       const answeredButton = document.getElementById(`${id}-answered`)
       answeredButton.addEventListener('click', e => {
-        if(answeredButton.textContent === "Answered") {
+        if (answeredButton.textContent === 'Answered') {
           // do stuff
           answeredButton.textContent = 'Cancel'
-          answeredButton.className = "btn item-button btn-warning btn-sm my-2"
+          answeredButton.className = 'btn item-button btn-warning btn-sm my-2'
 
           const li = e.target.closest('LI')
           const form = document.createElement('FORM')
           form.id = `${id}-form`
-          form.className = "form-group d-flex row my-2"
+          form.className = 'form-group d-flex row my-2'
           form.innerHTML = `<div class="col-md-8">
               <textarea class="form-control" id="answer-${id}" rows="3" placeholder="Tell us what the solution was"></textarea>
             </div>
@@ -42,7 +42,7 @@ function getAllRequests () {
           li.appendChild(form)
         } else {
           answeredButton.textContent = 'Answered'
-          answeredButton.className = "btn item-button btn-success btn-sm my-2"
+          answeredButton.className = 'btn item-button btn-success btn-sm my-2'
           document.getElementById(`${id}-form`).remove()
         }
 
