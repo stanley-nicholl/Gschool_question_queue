@@ -65,6 +65,11 @@ function submitMessage (messageContent, userName) {
     name: userName,
     question: messageContent,
     resolved: false
+  }).then(function() {
+    // popup the success
+    console.log("submitted successfully")
+  }).catch(function(error) {
+    console.error(error)
   })
 }
 
@@ -77,13 +82,18 @@ if (window.route === 'index') {
   let userInfo = JSON.parse(window.localStorage.getItem('user'))
   const submitButton = document.getElementById('add-request')
   const messageTextField = document.getElementById('message-text')
+  const greetingDiv = document.getElementById('greeting')
+
+  greetingDiv.textContent = `Hello, ${userInfo.fname}!`
+
   submitButton.addEventListener('click', e => {
     let messageText = messageTextField.value
     if (messageText !== '') {
       submitMessage(messageText, userInfo.fname)
-      console.log('message submitted')
       messageTextField.value = ''
     }
   })
   getAllRequests()
+} else if (window.route === 'archive') {
+  // do archive stuff
 }
