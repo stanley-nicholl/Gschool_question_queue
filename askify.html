@@ -29,9 +29,9 @@
       ASKIFY
     </a>
     <div class="right-side d-flex align-items-center">
-      <p id="userFName" class="mr-3 mb-0"></p>
+      <p class="mr-3 mb-0" id="greeting">Hello</p>
       <div id="queueSpot" class="bg-success text-white text-center mr-3">2</div>
-      <a class="archived mb-0" href="#">Archived Asks</a>
+      <a class="archived mb-0" href="/archive.html">Archived Asks</a>
     </div>
   </nav>
 
@@ -40,7 +40,7 @@
       <h1 class="mb-4 text-white text-center">Ask and ye shall receive.</h1>
       <form>
         <div class="d-flex justify-content-around form-group">
-          <input class="form-control form-control-lg mr-5 py-3" type="text" placeholder="What would you like help with?" required>
+          <input class="form-control form-control-lg mr-5 py-3" type="text" placeholder="What would you like help with?" required id="message-text">
           <button type="button" class="btn btn-light btn-lg py-3 px-3" id="add-request">Add me to the queue!</button>
         </div>
       </form>
