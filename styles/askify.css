@@ -69,3 +69,7 @@ li {
 .hidden {
   display: none;
 }
+
+.topic {
+  width: 100%
+}
