@@ -5,6 +5,7 @@ const config = require('./config').config
 const firebase = require('firebase')
 // const firebaseui = require('firebaseui')
 
+let username
 firebase.initializeApp(config)
 // let user = firebase.auth().currentUser
 let database = firebase.database()
@@ -14,12 +15,46 @@ function getAllRequests () {
     let result = snapshot.val()
     const ids = Object.keys(result)
     const queue = document.getElementById('queue')
+    const queueSpot = document.getElementById('queueSpot')
+    let queueNum = 0
+
     queue.innerHTML = ''
     const openQuestions = ids.filter(id => !result[id].resolved)
     openQuestions.forEach((id, index) => {
       const item = result[id]
+      if ((item.name === username) && (queueNum === 0)) {
+        queueNum = index + 1
+        queueSpot.textContent = queueNum
+        window.localStorage.setItem('place', queueNum)
+      }
       queue.appendChild(createNewListItem(id, index + 1, item.name, item.question))
       const answeredButton = document.getElementById(`${id}-answered`)
+      const editButton = document.getElementById(`${id}-edit`)
+      const questionText = document.getElementById(`${id}-question`)
+      editButton.addEventListener('click', e => {
+        if (editButton.textContent === 'Edit') {
+          editButton.textContent = 'Save'
+          const input = document.createElement('INPUT')
+          input.style.width = '100%'
+          input.id = `${id}-edit-input`
+
+          input.value = item.question
+          questionText.textContent = ''
+          questionText.appendChild(input)
+
+          answeredButton.classList.toggle('disabled')
+        } else {
+          editButton.textContent = 'Edit'
+          answeredButton.classList.toggle('disabled')
+          const input = document.getElementById(`${id}-edit-input`)
+
+          database.ref('requests/' + id).update({
+            question: input.value
+          })
+          questionText.textContent = input.value
+        }
+      })
+
       answeredButton.addEventListener('click', e => {
         if (answeredButton.textContent === 'Answered') {
           // do stuff
@@ -43,7 +78,13 @@ function getAllRequests () {
           document.getElementById(`archive-${id}`).addEventListener('click', e => {
             const helperForm = document.getElementById(`helper-${id}`)
             const solutionForm = document.getElementById(`answer-${id}`)
-            markAsResolved(id, solutionForm.value, helperForm.value)
+            if ((solutionForm.value !== '') && (helperForm.value !== '')) {
+              markAsResolved(id, solutionForm.value, helperForm.value)
+            } else if (solutionForm.value === '') {
+              window.alert('Please let us know what the solution was.')
+            } else if (helperForm.value === '') {
+              window.alert('Please let us know who helped you.')
+            }
           })
         } else {
           answeredButton.textContent = 'Answered'
@@ -70,14 +111,15 @@ function createNewListItem (id, index, name, question) {
         <p class="element name">${name}</p>
       </div>
       <div class="col-md-6 d-flex align-items-center">
-        <p class="element topic">${question}</p>
+        <p class="element topic" id="${id}-question">${question}</p>
       </div>
       <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
-        <button type="button" class="btn item-button btn-primary btn-sm mt-2">Edit</button>
+        <button type="button" id="${id}-edit" class="btn item-button btn-primary btn-sm mt-2">Edit</button>
         <button type="button" id="${id}-answered" class="btn item-button btn-success btn-sm my-2">Answered</button>
       </div>
     </div>
     `
+
   return newListItem
 }
 
@@ -158,18 +200,19 @@ function markAsResolved (id, resolutionMessage, helper) {
 }
 
 function displayArchivedQuestions () {
-  let message = {}
+  // let message = {}
   database.ref('archive/').on('value', function (snapshot) {
     let result = snapshot.val()
     const messageIds = Object.keys(result)
 
     const archive = document.getElementById('archive')
     archive.innerHTML = ''
+    messageIds.sort(function (a, b) {
+      return a < b
+    })
     messageIds.forEach((id, index) => {
       const item = result[id]
-      console.log(item)
       let messageText = item.question
-
       let helper = item.helper
 
       archive.appendChild(createNewArchiveListItem(id, index + 1, item.name, item.question))
@@ -181,12 +224,13 @@ function displayArchivedQuestions () {
           detailsDiv.id = `${id}-detail-div`
           detailsDiv.className = 'form-group d-flex row my-2'
           detailsDiv.innerHTML = `
-              <div class="col-md-10">
-                <p class="element answer text-primary">${messageText}</p>
-              </div>
-              <div class="col-md-2">
-                <p class="element helper text-primary">${helper}</p>
-              </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-9">
+              <p class="element answer text-secondary">${messageText}</p>
+            </div>
+            <div class="col-md-2">
+              <p class="element helper text-center text-secondary">${helper}</p>
+            </div>
           `
           const li = e.target.closest('LI')
           li.appendChild(detailsDiv)
@@ -197,7 +241,6 @@ function displayArchivedQuestions () {
         }
       })
     })
-    console.log(message)
   })
 }
 
@@ -208,10 +251,10 @@ if (window.route === 'index') {
 
 } else if (window.route === 'askify') {
   let userInfo = JSON.parse(window.localStorage.getItem('user'))
+  username = userInfo.fname
   const submitButton = document.getElementById('add-request')
   const messageTextField = document.getElementById('message-text')
   const greetingDiv = document.getElementById('greeting')
-
   greetingDiv.textContent = `Hello, ${userInfo.fname}!`
 
   submitButton.addEventListener('click', e => {
@@ -223,5 +266,10 @@ if (window.route === 'index') {
   })
   getAllRequests()
 } else if (window.route === 'archive') {
+  let userInfo = JSON.parse(window.localStorage.getItem('user'))
+  const greetingDiv = document.getElementById('greeting')
+  const queueNum = document.getElementById('queueSpot')
+  queueNum.textContent = window.localStorage.getItem('place')
+  greetingDiv.textContent = `Hello, ${userInfo.fname}!`
   displayArchivedQuestions()
 }
