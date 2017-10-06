@@ -40,6 +40,11 @@ function getAllRequests () {
               <button type="button" id="archive-${id}" class="btn item-button btn-secondary btn-sm">Archive</button>
             </div>`
           li.appendChild(form)
+          document.getElementById(`archive-${id}`).addEventListener('click', e => {
+            const helperForm = document.getElementById(`helper-${id}`)
+            const solutionForm = document.getElementById(`answer-${id}`)
+            markAsResolved(id, solutionForm.value, helperForm.value)
+          })
         } else {
           answeredButton.textContent = 'Answered'
           answeredButton.className = 'btn item-button btn-success btn-sm my-2'
@@ -70,6 +75,29 @@ function createNewListItem (id, index, name, question) {
       <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
         <button type="button" class="btn item-button btn-primary btn-sm mt-2">Edit</button>
         <button type="button" id="${id}-answered" class="btn item-button btn-success btn-sm my-2">Answered</button>
+      </div>
+    </div>
+    `
+  return newListItem
+}
+
+function createNewArchiveListItem (id, index, name, question, answer, helper) {
+  const newListItem = document.createElement('LI')
+  newListItem.id = id
+  // newListItem.className = 'row entry py-2'
+  newListItem.innerHTML = `
+    <div class="d-flex row">
+      <div class="col-md-1 d-flex justify-content-center align-items-center">
+        <p class="element queueNum">${index}</p>
+      </div>
+      <div class="col-md-3 d-flex align-items-center">
+        <p class="element name">${name}</p>
+      </div>
+      <div class="col-md-6 d-flex align-items-center">
+        <p class="element topic">${question}</p>
+      </div>
+      <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
+        <button type="button" id="${id}-details" class="btn item-button btn-success btn-sm my-2">Details</button>
       </div>
     </div>
     `
@@ -107,15 +135,22 @@ function submitMessage (messageContent, userName) {
   })
 }
 
-function markAsResolved (id, resolutionMessage) {
+function markAsResolved (id, resolutionMessage, helper) {
   database.ref('requests/' + id).update({
     resolved: true
   }).then(function () {
     database.ref('requests/' + id).once('value', function (snapshot) {
-      database.ref('archive/' + id).set(snapshot.val())
-      database.ref('archive/' + id).update({'resolution': resolutionMessage})
-    }).then(function () {
-      // database.ref('requests/' + id).set(null)
+      let name = snapshot.val().name
+      let question = snapshot.val().question
+      database.ref('archive/' + id).set({
+        'name': name,
+        'question': question,
+        'resolution': resolutionMessage,
+        'helper': helper,
+        'id': id
+      })
+    // }).then(function () {
+    //   // database.ref('requests/' + id).set(null)
     })
   }).catch(function (err) {
     console.error(err)
@@ -123,15 +158,46 @@ function markAsResolved (id, resolutionMessage) {
 }
 
 function displayArchivedQuestions () {
+  let message = {}
   database.ref('archive/').on('value', function (snapshot) {
     let result = snapshot.val()
-    const ids = Object.keys(result)
+    const messageIds = Object.keys(result)
+
     const archive = document.getElementById('archive')
     archive.innerHTML = ''
-    ids.forEach((id, index) => {
+    messageIds.forEach((id, index) => {
       const item = result[id]
-      archive.appendChild(createNewListItem(id, index + 1, item.name, item.question))
+      console.log(item)
+      let messageText = item.question
+
+      let helper = item.helper
+
+      archive.appendChild(createNewArchiveListItem(id, index + 1, item.name, item.question))
+      const detailsButton = document.getElementById(`${id}-details`)
+      detailsButton.addEventListener('click', e => {
+        if (detailsButton.textContent === 'Details') {
+          detailsButton.textContent = 'Collapse'
+          const detailsDiv = document.createElement('DIV')
+          detailsDiv.id = `${id}-detail-div`
+          detailsDiv.className = 'form-group d-flex row my-2'
+          detailsDiv.innerHTML = `
+              <div class="col-md-10">
+                <p class="element answer text-primary">${messageText}</p>
+              </div>
+              <div class="col-md-2">
+                <p class="element helper text-primary">${helper}</p>
+              </div>
+          `
+          const li = e.target.closest('LI')
+          li.appendChild(detailsDiv)
+          // console.log('button clicked')
+        } else {
+          detailsButton.textContent = 'Details'
+          document.getElementById(`${id}-detail-div`).remove()
+        }
+      })
     })
+    console.log(message)
   })
 }
 
@@ -156,8 +222,6 @@ if (window.route === 'index') {
     }
   })
   getAllRequests()
-
-  markAsResolved('1507242473577Kat', 'Iceland beard hoodie, fashion axe four loko blog typewriter kitsch master cleanse scenester.')
 } else if (window.route === 'archive') {
   displayArchivedQuestions()
 }
