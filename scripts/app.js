@@ -5,6 +5,7 @@ const config = require('./config').config
 const firebase = require('firebase')
 // const firebaseui = require('firebaseui')
 require('./index')
+const templates = require('./templates')
 
 let username
 firebase.initializeApp(config)
@@ -66,15 +67,7 @@ function getAllRequests () {
           const form = document.createElement('FORM')
           form.id = `${id}-form`
           form.className = 'form-group d-flex row my-2'
-          form.innerHTML = `<div class="col-md-8">
-              <textarea class="form-control" id="answer-${id}" rows="3" placeholder="Tell us what the solution was"></textarea>
-            </div>
-            <div class="col-md-2">
-              <input type="text" class="form-control" id="helper-${id}" aria-describedby="who helped you" placeholder="who helped you?">
-            </div>
-            <div class="col-md-2 d-flex flex-column align-items-center">
-              <button type="button" id="archive-${id}" class="btn item-button btn-secondary btn-sm">Archive</button>
-            </div>`
+          form.innerHTML = templates.form(form.id)
           li.appendChild(form)
           document.getElementById(`archive-${id}`).addEventListener('click', e => {
             const helperForm = document.getElementById(`helper-${id}`)
@@ -248,7 +241,7 @@ function displayArchivedQuestions () {
 function detect () {
   let repeatUser = window.localStorage.getItem('repeatUser')
   if (repeatUser) {
-    window.location.href = 'askify.html'
+    window.location.href = '/pages/askify.html'
   }
 }
 
