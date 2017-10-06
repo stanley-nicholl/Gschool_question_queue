@@ -1,9 +1,10 @@
-// const css = require('../styles/app.scss') // eslint-disable-line
+const css = require('../styles/app.scss') // eslint-disable-line
 const config = require('./config').config
 // const uiconfig = require('./config').uiconfig
 // console.log(uiconfig)
 const firebase = require('firebase')
 // const firebaseui = require('firebaseui')
+require('./index')
 
 let username
 firebase.initializeApp(config)

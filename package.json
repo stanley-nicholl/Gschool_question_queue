@@ -19,9 +19,9 @@
   },
   "scripts": {
     "lint": "standard --fix scripts/*.js | snazzy",
-    "start": "watchify ./scripts/app.js -o ./scripts/bundle.js & live-server .",
-    "build": "node build.js",
-    "prod": "live-server dist/",
+    "start": "watchify --debug ./scripts/app.js -o ./scripts/bundle.js & live-server .",
+    "build": "browserify ./scripts/app.js -o ./scripts/bundle.js && node build.js",
+    "prod": "npm run build && live-server dist/",
     "test": "mocha",
     "deploy": "npm run lint && npm run build && surge -p ./dist -d \"$(< CNAME)\""
   },
