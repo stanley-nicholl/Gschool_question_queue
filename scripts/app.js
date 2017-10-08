@@ -1,8 +1,5 @@
 // const css = require('../styles/app.scss') // eslint-disable-line
-const database = require('../db')
 let username
-
-const templates = require('../templates')
 
 const {
   submitMessage,
