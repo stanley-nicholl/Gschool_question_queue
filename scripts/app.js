@@ -1,14 +1,12 @@
 // const css = require('../styles/app.scss') // eslint-disable-line
-const config = require('./config').config
-// const uiconfig = require('./config').uiconfig
-// console.log(uiconfig)
+const config = require('./config')
 const firebase = require('firebase')
-// const firebaseui = require('firebaseui')
 
 let username
 firebase.initializeApp(config)
-// let user = firebase.auth().currentUser
 let database = firebase.database()
+
+const templates = require('../templates')
 
 function getAllRequests () {
   database.ref('requests/').on('value', snapshot => {
@@ -65,15 +63,7 @@ function getAllRequests () {
           const form = document.createElement('FORM')
           form.id = `${id}-form`
           form.className = 'form-group d-flex row my-2'
-          form.innerHTML = `<div class="col-md-8">
-              <textarea class="form-control" id="answer-${id}" rows="3" placeholder="Tell us what the solution was"></textarea>
-            </div>
-            <div class="col-md-2">
-              <input type="text" class="form-control" id="helper-${id}" aria-describedby="who helped you" placeholder="who helped you?">
-            </div>
-            <div class="col-md-2 d-flex flex-column align-items-center">
-              <button type="button" id="archive-${id}" class="btn item-button btn-secondary btn-sm">Archive</button>
-            </div>`
+          form.innerHTML = templates.form(id)
           li.appendChild(form)
           document.getElementById(`archive-${id}`).addEventListener('click', e => {
             const helperForm = document.getElementById(`helper-${id}`)
@@ -91,8 +81,6 @@ function getAllRequests () {
           answeredButton.className = 'btn item-button btn-success btn-sm my-2'
           document.getElementById(`${id}-form`).remove()
         }
-
-        // display the answer box
       })
     })
   })
@@ -101,32 +89,13 @@ function getAllRequests () {
 function createNewListItem (id, index, name, question) {
   const newListItem = document.createElement('LI')
   newListItem.id = id
-  // newListItem.className = 'row entry py-2'
-  newListItem.innerHTML = `
-    <div class="d-flex row">
-      <div class="col-md-1 d-flex justify-content-center align-items-center">
-        <p class="element queueNum">${index}</p>
-      </div>
-      <div class="col-md-3 d-flex align-items-center">
-        <p class="element name">${name}</p>
-      </div>
-      <div class="col-md-6 d-flex align-items-center">
-        <p class="element topic" id="${id}-question">${question}</p>
-      </div>
-      <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
-        <button type="button" id="${id}-edit" class="btn item-button btn-primary btn-sm mt-2">Edit</button>
-        <button type="button" id="${id}-answered" class="btn item-button btn-success btn-sm my-2">Answered</button>
-      </div>
-    </div>
-    `
-
+  newListItem.innerHTML = templates.listitem(id, name, index, question)
   return newListItem
 }
 
 function createNewArchiveListItem (id, index, name, question, answer, helper) {
   const newListItem = document.createElement('LI')
   newListItem.id = id
-  // newListItem.className = 'row entry py-2'
   newListItem.innerHTML = `
     <div class="d-flex row">
       <div class="col-md-1 d-flex justify-content-center align-items-center">
@@ -145,22 +114,6 @@ function createNewArchiveListItem (id, index, name, question, answer, helper) {
     `
   return newListItem
 }
-
-// function writeUserData(userId, name, email) {
-//   database.ref('users/' + userId).set({
-//     username: name,
-//     email: email
-//   })
-// }
-
-// function writeRequestData (requestId, name, question) {
-//   database.ref('requests/' + requestId).set({
-//     _id: requestId,
-//     name: name,
-//     question: question,
-//     resolved: false
-//   })
-// }
 
 function submitMessage (messageContent, userName) {
   let uid = Date.now() + userName
@@ -191,8 +144,6 @@ function markAsResolved (id, resolutionMessage, helper) {
         'helper': helper,
         'id': id
       })
-    // }).then(function () {
-    //   // database.ref('requests/' + id).set(null)
     })
   }).catch(function (err) {
     console.error(err)
@@ -243,8 +194,6 @@ function displayArchivedQuestions () {
     })
   })
 }
-
-// writeUserData(2, "Stan N.", 'stan@example.com')
 
 if (window.route === 'index') {
   // do login page stuff
