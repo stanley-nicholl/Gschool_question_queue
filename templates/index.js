@@ -1,4 +1,5 @@
 module.exports = {
   form: require('./form'),
-  listitem: require('./listitem')
+  listitem: require('./listitem'),
+  archiveitem: require('./archiveitem')
 }

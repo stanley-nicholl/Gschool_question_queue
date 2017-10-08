@@ -94,25 +94,10 @@ function createNewListItem (id, index, name, question) {
 }
 
 function createNewArchiveListItem (id, index, name, question, answer, helper) {
-  const newListItem = document.createElement('LI')
-  newListItem.id = id
-  newListItem.innerHTML = `
-    <div class="d-flex row">
-      <div class="col-md-1 d-flex justify-content-center align-items-center">
-        <p class="element queueNum">${index}</p>
-      </div>
-      <div class="col-md-3 d-flex align-items-center">
-        <p class="element name">${name}</p>
-      </div>
-      <div class="col-md-6 d-flex align-items-center">
-        <p class="element topic">${question}</p>
-      </div>
-      <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
-        <button type="button" id="${id}-details" class="btn item-button btn-success btn-sm my-2">Details</button>
-      </div>
-    </div>
-    `
-  return newListItem
+  const newArchiveListItem = document.createElement('LI')
+  newArchiveListItem.id = id
+  newArchiveListItem.innerHTML = templates.archiveitem(id, index, name, question)
+  return newArchiveListItem
 }
 
 function submitMessage (messageContent, userName) {
@@ -163,7 +148,7 @@ function displayArchivedQuestions () {
     })
     messageIds.forEach((id, index) => {
       const item = result[id]
-      let messageText = item.question
+      let messageText = item.resolution
       let helper = item.helper
 
       archive.appendChild(createNewArchiveListItem(id, index + 1, item.name, item.question))
