@@ -19,10 +19,35 @@ const {
   handleDetailsButtonClick
 } = require('./archive')
 
-if (window.route === 'index') {
-  // do login page stuff
 
-} else if (window.route === 'askify') {
+const {
+  detect,
+  handleSubmitButtonClick
+} = require('./index')
+
+
+if (window.location.href.includes('index.html')) {
+  let userInfo = {}
+  let submit = document.getElementById('submit')
+  let repeatUser = window.localStorage.getItem('repeatUser')
+  
+  detect(repeatUser)
+  
+  submit.addEventListener('click', function (e) {
+    const success = handleSubmitButtonClick(userInfo)
+    if (success) {
+      window.location.href = 'askify.html'
+    }
+  })  
+
+} else if (window.location.href.includes('askify.html')) {
+  let repeatUser = window.localStorage.getItem('repeatUser')
+
+  if (!repeatUser) {
+    window.location.href = 'index.html'
+  }
+  
+  
   let userInfo = JSON.parse(window.localStorage.getItem('user'))
   username = userInfo.fname
   const submitButton = document.getElementById('add-request')
@@ -39,7 +64,12 @@ if (window.route === 'index') {
   })
   getAllRequests()
 
-} else if (window.route === 'archive') {
+} else if (window.location.href.includes('archive.html')) {
+
+  let repeatUser = window.localStorage.getItem('repeatUser')
+  if (!repeatUser) {
+    window.location.href = 'index.html'
+  }
 
   let userInfo = JSON.parse(window.localStorage.getItem('user'))
   const greetingDiv = document.getElementById('greeting')
