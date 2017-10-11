@@ -3,44 +3,19 @@ let username
 
 const {
   submitMessage,
-  getAllRequests,
-  displayQuestion,
-  handleEditButtonClick,
-  handleAnswerButtonClick,
-  handleArchiveButtonClick,
-  createNewListItem,
-  markAsResolved
+  getAllRequests
 } = require('./askify')
 
 const {
-  createNewArchiveListItem,
-  displayArchivedQuestions,
-  displayMessage,
-  handleDetailsButtonClick
+  displayArchivedQuestions
 } = require('./archive')
-
 
 const {
   detect,
   handleSubmitButtonClick
 } = require('./index')
 
-
-if (window.location.href.includes('index.html')) {
-  let userInfo = {}
-  let submit = document.getElementById('submit')
-  let repeatUser = window.localStorage.getItem('repeatUser')
-  console.log('login?')
-  detect(repeatUser)
-  
-  submit.addEventListener('click', function (e) {
-    const success = handleSubmitButtonClick(userInfo)
-    if (success) {
-      window.location.href = '/pages/askify.html'
-    }
-  })  
-
-} else if (window.location.href.includes('askify.html')) {
+if (window.location.href.includes('askify.html')) {
   let repeatUser = window.localStorage.getItem('repeatUser')
 
   if (!repeatUser) {
@@ -52,7 +27,7 @@ if (window.location.href.includes('index.html')) {
   const submitButton = document.getElementById('add-request')
   const messageTextField = document.getElementById('message-text')
   const greetingDiv = document.getElementById('greeting')
-  greetingDiv.textContent = `Hello, ${userInfo.fname}!`
+  greetingDiv.textContent = `Hello, ${username}!`
 
   submitButton.addEventListener('click', e => {
     let messageText = messageTextField.value
@@ -62,9 +37,7 @@ if (window.location.href.includes('index.html')) {
     }
   })
   getAllRequests()
-
 } else if (window.location.href.includes('archive.html')) {
-
   let repeatUser = window.localStorage.getItem('repeatUser')
   if (!repeatUser) {
     window.location.href = '../index.html'
@@ -76,5 +49,18 @@ if (window.location.href.includes('index.html')) {
   queueNum.textContent = window.localStorage.getItem('place')
   greetingDiv.textContent = `Hello, ${userInfo.fname}!`
   displayArchivedQuestions()
-  
+} else { // default route
+  window.route = '/index.html'
+  let userInfo = {}
+  let submit = document.getElementById('submit')
+  let repeatUser = window.localStorage.getItem('repeatUser')
+  console.log('login?')
+  detect(repeatUser)
+
+  submit.addEventListener('click', function (e) {
+    const success = handleSubmitButtonClick(userInfo)
+    if (success) {
+      window.location.href = '/pages/askify.html'
+    }
+  })
 }

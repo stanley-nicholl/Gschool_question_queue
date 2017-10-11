@@ -1,7 +1,6 @@
 const database = require('../db')
 const templates = require('../templates')
 
-
 function createNewArchiveListItem (id, index, name, question, answer, helper) {
   const newArchiveListItem = document.createElement('LI')
   newArchiveListItem.id = id
@@ -9,13 +8,12 @@ function createNewArchiveListItem (id, index, name, question, answer, helper) {
   return newArchiveListItem
 }
 
-
 function displayArchivedQuestions () {
   database.ref('archive/').on('value', function (snapshot) {
+    const archive = document.getElementById('archive')
     let result = snapshot.val()
     const messageIds = Object.keys(result)
 
-    const archive = document.getElementById('archive')
     archive.innerHTML = ''
     messageIds.sort(function (a, b) {
       return a < b
@@ -26,11 +24,11 @@ function displayArchivedQuestions () {
   })
 }
 
-function displayMessage(result, id, index) {
+function displayMessage (result, id, index) {
   const item = result[id]
   let messageText = item.resolution
   let helper = item.helper
-
+  const archive = document.getElementById('archive')
   archive.appendChild(createNewArchiveListItem(id, index + 1, item.name, item.question))
   const detailsButton = document.getElementById(`${id}-details`)
   detailsButton.addEventListener('click', e => {
@@ -38,7 +36,7 @@ function displayMessage(result, id, index) {
   })
 }
 
-function handleDetailsButtonClick(detailsButton ,id, messageText, helper) { 
+function handleDetailsButtonClick (detailsButton, id, messageText, helper) {
   if (detailsButton.textContent === 'Details') {
     detailsButton.textContent = 'Collapse'
     const detailsDiv = document.createElement('DIV')
@@ -54,8 +52,5 @@ function handleDetailsButtonClick(detailsButton ,id, messageText, helper) {
 }
 
 module.exports = {
-  createNewArchiveListItem,
-  displayArchivedQuestions,
-  displayMessage,
-  handleDetailsButtonClick
+  displayArchivedQuestions
 }

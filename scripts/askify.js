@@ -16,41 +16,48 @@ function submitMessage (messageContent, userName) {
   })
 }
 
+function displayQueueNumber (queueSpotNumber) {
+  const queueSpot = document.getElementById('queueSpot')
+  if (queueSpotNumber) queueSpot.textContent = queueSpotNumber
+}
+
 function getAllRequests () {
   database.ref('requests/').on('value', snapshot => {
     let result = snapshot.val()
 
     const ids = Object.keys(result)
     const queue = document.getElementById('queue')
-    const queueSpot = document.getElementById('queueSpot')
+    const username = window.localStorage.getItem('userFName')
     let queueNum = 0
-
     queue.innerHTML = ''
     const openQuestions = ids.filter(id => !result[id].resolved)
     openQuestions.forEach((id, index) => {
-      displayQuestion(result, id, index, queueNum)
+      if ((queueNum === 0) && (result[id].name === username)) {
+        queueNum = index + 1
+      }
+      displayQuestion(result, id, index)
     })
+    displayQueueNumber(queueNum)
   })
 }
 
-function displayQuestion(result, id, index, queueNum) {
+function displayQuestion (result, id, index) {
   const item = result[id]
-
+  const queue = document.getElementById('queue')
   queue.appendChild(createNewListItem(id, index + 1, item.name, item.question))
   const answeredButton = document.getElementById(`${id}-answered`)
   const editButton = document.getElementById(`${id}-edit`)
-  
+
   editButton.addEventListener('click', e => {
     handleEditButtonClick(editButton, item, id)
   })
 
   answeredButton.addEventListener('click', e => {
-    handleAnswerButtonClick(answeredButton, id) 
+    handleAnswerButtonClick(answeredButton, id)
   })
 }
 
-
-function handleEditButtonClick(editButton, item, id) {
+function handleEditButtonClick (editButton, item, id) {
   const questionText = document.getElementById(`${id}-question`)
   if (editButton.textContent === 'Edit') {
     editButton.textContent = 'Save'
@@ -61,7 +68,6 @@ function handleEditButtonClick(editButton, item, id) {
     input.value = item.question
     questionText.textContent = ''
     questionText.appendChild(input)
-
   } else {
     editButton.textContent = 'Edit'
     const input = document.getElementById(`${id}-edit-input`)
@@ -73,7 +79,7 @@ function handleEditButtonClick(editButton, item, id) {
   }
 }
 
-function handleAnswerButtonClick(answeredButton, id) {
+function handleAnswerButtonClick (answeredButton, id) {
   if (answeredButton.textContent === 'Answered') {
     answeredButton.textContent = 'Cancel'
     answeredButton.className = 'btn item-button btn-warning btn-sm my-2'
@@ -94,7 +100,7 @@ function handleAnswerButtonClick(answeredButton, id) {
   }
 }
 
-function handleArchiveButtonClick(id) {
+function handleArchiveButtonClick (id) {
   const helperForm = document.getElementById(`helper-${id}`)
   const solutionForm = document.getElementById(`answer-${id}`)
   if ((solutionForm.value !== '') && (helperForm.value !== '')) {
@@ -135,11 +141,5 @@ function markAsResolved (id, resolutionMessage, helper) {
 
 module.exports = {
   submitMessage,
-  getAllRequests,
-  displayQuestion,
-  handleEditButtonClick,
-  handleAnswerButtonClick,
-  handleArchiveButtonClick,
-  createNewListItem, 
-  markAsResolved
+  getAllRequests
 }

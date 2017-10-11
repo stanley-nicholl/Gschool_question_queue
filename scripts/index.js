@@ -4,7 +4,7 @@ function detect (repeatUser) {
   }
 }
 
-function handleSubmitButtonClick(userInfo) {
+function handleSubmitButtonClick (userInfo) {
   const fname = document.getElementById('fname').value
   const lname = document.getElementById('lname').value
   const email = document.getElementById('email').value
@@ -12,10 +12,10 @@ function handleSubmitButtonClick(userInfo) {
   userInfo['lname'] = lname
   userInfo['email'] = email
 
-  if((fname !== '') && ((lname !== '') && (email !== ''))) {
+  if ((fname !== '') && ((lname !== '') && (email !== ''))) {
     window.localStorage.setItem('repeatUser', 'yes')
     window.localStorage.setItem('userFName', document.getElementById('fname').value)
-    window.localStorage.setItem('user', JSON.stringify(userInfo))  
+    window.localStorage.setItem('user', JSON.stringify(userInfo))
     return true
   } else {
     return false
