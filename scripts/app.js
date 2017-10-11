@@ -1,18 +1,6 @@
-<<<<<<< HEAD
-// const css = require('../styles/app.scss') // eslint-disable-line
-=======
 const css = require('../styles/app.scss') // eslint-disable-line
-const config = require('./config').config
-// const uiconfig = require('./config').uiconfig
-// console.log(uiconfig)
-const firebase = require('firebase')
-// const firebaseui = require('firebaseui')
-require('./index')
-
->>>>>>> 1889062ab76661134df208daa6461d2487d08e33
 let username
 
-<<<<<<< HEAD
 const {
   submitMessage,
   getAllRequests,
@@ -42,13 +30,13 @@ if (window.location.href.includes('index.html')) {
   let userInfo = {}
   let submit = document.getElementById('submit')
   let repeatUser = window.localStorage.getItem('repeatUser')
-  
+  console.log('login?')
   detect(repeatUser)
   
   submit.addEventListener('click', function (e) {
     const success = handleSubmitButtonClick(userInfo)
     if (success) {
-      window.location.href = 'askify.html'
+      window.location.href = '/pages/askify.html'
     }
   })  
 
@@ -56,130 +44,9 @@ if (window.location.href.includes('index.html')) {
   let repeatUser = window.localStorage.getItem('repeatUser')
 
   if (!repeatUser) {
-    window.location.href = 'index.html'
+    window.location.href = '../index.html'
   }
-  
-  
-=======
-// function writeRequestData (requestId, name, question) {
-//   database.ref('requests/' + requestId).set({
-//     _id: requestId,
-//     name: name,
-//     question: question,
-//     resolved: false
-//   })
-// }
 
-function submitMessage (messageContent, userName) {
-  let uid = Date.now() + userName
-  database.ref('requests/' + uid).set({
-    _id: uid,
-    name: userName,
-    question: messageContent,
-    resolved: false
-  }).then(function () {
-    // popup the success
-
-  }).catch(function (error) {
-    console.error(error)
-  })
-}
-
-function markAsResolved (id, resolutionMessage, helper) {
-  database.ref('requests/' + id).update({
-    resolved: true
-  }).then(function () {
-    database.ref('requests/' + id).once('value', function (snapshot) {
-      let name = snapshot.val().name
-      let question = snapshot.val().question
-      database.ref('archive/' + id).set({
-        'name': name,
-        'question': question,
-        'resolution': resolutionMessage,
-        'helper': helper,
-        'id': id
-      })
-    // }).then(function () {
-    //   // database.ref('requests/' + id).set(null)
-    })
-  }).catch(function (err) {
-    console.error(err)
-  })
-}
-
-function displayArchivedQuestions () {
-  // let message = {}
-  database.ref('archive/').on('value', function (snapshot) {
-    let result = snapshot.val()
-    const messageIds = Object.keys(result)
-
-    const archive = document.getElementById('archive')
-    archive.innerHTML = ''
-    messageIds.sort(function (a, b) {
-      return a < b
-    })
-    messageIds.forEach((id, index) => {
-      const item = result[id]
-      let messageText = item.question
-      let helper = item.helper
-
-      archive.appendChild(createNewArchiveListItem(id, index + 1, item.name, item.question))
-      const detailsButton = document.getElementById(`${id}-details`)
-      detailsButton.addEventListener('click', e => {
-        if (detailsButton.textContent === 'Details') {
-          detailsButton.textContent = 'Collapse'
-          const detailsDiv = document.createElement('DIV')
-          detailsDiv.id = `${id}-detail-div`
-          detailsDiv.className = 'form-group d-flex row my-2'
-          detailsDiv.innerHTML = `
-            <div class="col-md-1"></div>
-            <div class="col-md-9">
-              <p class="element answer text-secondary">${messageText}</p>
-            </div>
-            <div class="col-md-2">
-              <p class="element helper text-center text-secondary">${helper}</p>
-            </div>
-          `
-          const li = e.target.closest('LI')
-          li.appendChild(detailsDiv)
-          // console.log('button clicked')
-        } else {
-          detailsButton.textContent = 'Details'
-          document.getElementById(`${id}-detail-div`).remove()
-        }
-      })
-    })
-  })
-}
-
-function detect () {
-  let repeatUser = window.localStorage.getItem('repeatUser')
-  if (repeatUser) {
-    window.location.href = 'askify.html'
-  }
-}
-
-if (window.route === 'index') {
-  // do login page stuff
-  let userInfo = {}
-  let submit = document.getElementById('submit')
-
-  detect()
-
-  submit.addEventListener('click', function (e) {
-    e.preventDefault()
-    userInfo['fname'] = document.getElementById('fname').value
-    userInfo['lname'] = document.getElementById('lname').value
-    userInfo['email'] = document.getElementById('email').value
-    window.localStorage.setItem('repeatUser', 'yes')
-    window.localStorage.setItem('userFName', document.getElementById('fname').value)
-    window.location.href = 'askify.html'
-    window.localStorage.setItem('repeatUser', 'yes')
-    window.localStorage.setItem('user', JSON.stringify(userInfo))
-    window.location.href = 'askify.html'
-  })
-} else if (window.route === 'askify') {
->>>>>>> 1889062ab76661134df208daa6461d2487d08e33
   let userInfo = JSON.parse(window.localStorage.getItem('user'))
   username = userInfo.fname
   const submitButton = document.getElementById('add-request')
@@ -200,7 +67,7 @@ if (window.route === 'index') {
 
   let repeatUser = window.localStorage.getItem('repeatUser')
   if (!repeatUser) {
-    window.location.href = 'index.html'
+    window.location.href = '../index.html'
   }
 
   let userInfo = JSON.parse(window.localStorage.getItem('user'))
