@@ -1,11 +1,10 @@
-# Frontend Project Template
+# Askify Help Queue 
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-A template for creating a frontend project that uses the following:
+A prototype help queue for students that uses:
 
 - [Browserify](http://browserify.org/)
-- [Bulma](http://bulma.io/)
 - [StandardJS](https://standardjs.com/)
 - [Surge](https://surge.sh/)
 - [live-server](https://www.npmjs.com/package/live-server)

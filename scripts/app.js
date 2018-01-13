@@ -1,4 +1,5 @@
 const css = require('../styles/app.scss') // eslint-disable-line
+
 const config = require('./config').config
 // const uiconfig = require('./config').uiconfig
 // console.log(uiconfig)
@@ -193,84 +194,38 @@ function markAsResolved (id, resolutionMessage, helper) {
   })
 }
 
-function displayArchivedQuestions () {
-  // let message = {}
-  database.ref('archive/').on('value', function (snapshot) {
-    let result = snapshot.val()
-    const messageIds = Object.keys(result)
+const {
+  submitMessage,
+  getAllRequests
+} = require('./askify')
 
-    const archive = document.getElementById('archive')
-    archive.innerHTML = ''
-    messageIds.sort(function (a, b) {
-      return a < b
-    })
-    messageIds.forEach((id, index) => {
-      const item = result[id]
-      let messageText = item.question
-      let helper = item.helper
+const {
+  displayArchivedQuestions
+} = require('./archive')
 
-      archive.appendChild(createNewArchiveListItem(id, index + 1, item.name, item.question))
-      const detailsButton = document.getElementById(`${id}-details`)
-      detailsButton.addEventListener('click', e => {
-        if (detailsButton.textContent === 'Details') {
-          detailsButton.textContent = 'Collapse'
-          const detailsDiv = document.createElement('DIV')
-          detailsDiv.id = `${id}-detail-div`
-          detailsDiv.className = 'form-group d-flex row my-2'
-          detailsDiv.innerHTML = `
-            <div class="col-md-1"></div>
-            <div class="col-md-9">
-              <p class="element answer text-secondary">${messageText}</p>
-            </div>
-            <div class="col-md-2">
-              <p class="element helper text-center text-secondary">${helper}</p>
-            </div>
-          `
-          const li = e.target.closest('LI')
-          li.appendChild(detailsDiv)
-          // console.log('button clicked')
-        } else {
-          detailsButton.textContent = 'Details'
-          document.getElementById(`${id}-detail-div`).remove()
-        }
-      })
-    })
-  })
-}
+const {
+  detect,
+  handleSubmitButtonClick
+} = require('./index')
 
-function detect () {
+if (window.location.href.includes('askify.html')) {
   let repeatUser = window.localStorage.getItem('repeatUser')
+
   if (repeatUser) {
     window.location.href = '/pages/askify.html'
   }
 }
 
-if (window.route === 'index') {
-  // do login page stuff
-  let userInfo = {}
-  let submit = document.getElementById('submit')
+  if (!repeatUser) {
+    window.location.href = '../index.html'
+  }
 
-  detect()
-
-  submit.addEventListener('click', function (e) {
-    e.preventDefault()
-    userInfo['fname'] = document.getElementById('fname').value
-    userInfo['lname'] = document.getElementById('lname').value
-    userInfo['email'] = document.getElementById('email').value
-    window.localStorage.setItem('repeatUser', 'yes')
-    window.localStorage.setItem('userFName', document.getElementById('fname').value)
-    window.location.href = 'askify.html'
-    window.localStorage.setItem('repeatUser', 'yes')
-    window.localStorage.setItem('user', JSON.stringify(userInfo))
-    window.location.href = 'askify.html'
-  })
-} else if (window.route === 'askify') {
   let userInfo = JSON.parse(window.localStorage.getItem('user'))
   username = userInfo.fname
   const submitButton = document.getElementById('add-request')
   const messageTextField = document.getElementById('message-text')
   const greetingDiv = document.getElementById('greeting')
-  greetingDiv.textContent = `Hello, ${userInfo.fname}!`
+  greetingDiv.textContent = `Hello, ${username}!`
 
   submitButton.addEventListener('click', e => {
     let messageText = messageTextField.value
@@ -280,11 +235,30 @@ if (window.route === 'index') {
     }
   })
   getAllRequests()
-} else if (window.route === 'archive') {
+} else if (window.location.href.includes('archive.html')) {
+  let repeatUser = window.localStorage.getItem('repeatUser')
+  if (!repeatUser) {
+    window.location.href = '../index.html'
+  }
+
   let userInfo = JSON.parse(window.localStorage.getItem('user'))
   const greetingDiv = document.getElementById('greeting')
   const queueNum = document.getElementById('queueSpot')
   queueNum.textContent = window.localStorage.getItem('place')
   greetingDiv.textContent = `Hello, ${userInfo.fname}!`
   displayArchivedQuestions()
+} else { // default route
+  window.route = '/index.html'
+  let userInfo = {}
+  let submit = document.getElementById('submit')
+  let repeatUser = window.localStorage.getItem('repeatUser')
+  console.log('login?')
+  detect(repeatUser)
+
+  submit.addEventListener('click', function (e) {
+    const success = handleSubmitButtonClick(userInfo)
+    if (success) {
+      window.location.href = '/pages/askify.html'
+    }
+  })
 }
