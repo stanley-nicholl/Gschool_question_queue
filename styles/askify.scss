@@ -1,3 +1,5 @@
+$primary: #007bff;
+
 body {
   box-sizing: border-box;
   font-size: 16px;
@@ -7,7 +9,7 @@ body {
 .navbar-brand {
   font-size: 3rem;
   font-weight: bold;
-  color: #007bff !important;
+  color: $primary !important;
 }
 
 #queueSpot {
@@ -68,4 +70,8 @@ li {
 
 .hidden {
   display: none;
+}
+
+.topic {
+  width: 100%
 }

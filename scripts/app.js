@@ -1,10 +1,14 @@
-// const css = require('../styles/app.scss') // eslint-disable-line
+const css = require('../styles/app.scss') // eslint-disable-line
+
 const config = require('./config').config
 // const uiconfig = require('./config').uiconfig
 // console.log(uiconfig)
 const firebase = require('firebase')
 // const firebaseui = require('firebaseui')
+require('./index')
+const templates = require('./templates')
 
+let username
 firebase.initializeApp(config)
 // let user = firebase.auth().currentUser
 let database = firebase.database()
@@ -14,12 +18,46 @@ function getAllRequests () {
     let result = snapshot.val()
     const ids = Object.keys(result)
     const queue = document.getElementById('queue')
+    const queueSpot = document.getElementById('queueSpot')
+    let queueNum = 0
+
     queue.innerHTML = ''
     const openQuestions = ids.filter(id => !result[id].resolved)
     openQuestions.forEach((id, index) => {
       const item = result[id]
+      if ((item.name === username) && (queueNum === 0)) {
+        queueNum = index + 1
+        queueSpot.textContent = queueNum
+        window.localStorage.setItem('place', queueNum)
+      }
       queue.appendChild(createNewListItem(id, index + 1, item.name, item.question))
       const answeredButton = document.getElementById(`${id}-answered`)
+      const editButton = document.getElementById(`${id}-edit`)
+      const questionText = document.getElementById(`${id}-question`)
+      editButton.addEventListener('click', e => {
+        if (editButton.textContent === 'Edit') {
+          editButton.textContent = 'Save'
+          const input = document.createElement('INPUT')
+          input.style.width = '100%'
+          input.id = `${id}-edit-input`
+
+          input.value = item.question
+          questionText.textContent = ''
+          questionText.appendChild(input)
+
+          answeredButton.classList.toggle('disabled')
+        } else {
+          editButton.textContent = 'Edit'
+          answeredButton.classList.toggle('disabled')
+          const input = document.getElementById(`${id}-edit-input`)
+
+          database.ref('requests/' + id).update({
+            question: input.value
+          })
+          questionText.textContent = input.value
+        }
+      })
+
       answeredButton.addEventListener('click', e => {
         if (answeredButton.textContent === 'Answered') {
           // do stuff
@@ -30,20 +68,18 @@ function getAllRequests () {
           const form = document.createElement('FORM')
           form.id = `${id}-form`
           form.className = 'form-group d-flex row my-2'
-          form.innerHTML = `<div class="col-md-8">
-              <textarea class="form-control" id="answer-${id}" rows="3" placeholder="Tell us what the solution was"></textarea>
-            </div>
-            <div class="col-md-2">
-              <input type="text" class="form-control" id="helper-${id}" aria-describedby="who helped you" placeholder="who helped you?">
-            </div>
-            <div class="col-md-2 d-flex flex-column align-items-center">
-              <button type="button" id="archive-${id}" class="btn item-button btn-secondary btn-sm">Archive</button>
-            </div>`
+          form.innerHTML = templates.form(form.id)
           li.appendChild(form)
           document.getElementById(`archive-${id}`).addEventListener('click', e => {
             const helperForm = document.getElementById(`helper-${id}`)
             const solutionForm = document.getElementById(`answer-${id}`)
-            markAsResolved(id, solutionForm.value, helperForm.value)
+            if ((solutionForm.value !== '') && (helperForm.value !== '')) {
+              markAsResolved(id, solutionForm.value, helperForm.value)
+            } else if (solutionForm.value === '') {
+              window.alert('Please let us know what the solution was.')
+            } else if (helperForm.value === '') {
+              window.alert('Please let us know who helped you.')
+            }
           })
         } else {
           answeredButton.textContent = 'Answered'
@@ -70,14 +106,15 @@ function createNewListItem (id, index, name, question) {
         <p class="element name">${name}</p>
       </div>
       <div class="col-md-6 d-flex align-items-center">
-        <p class="element topic">${question}</p>
+        <p class="element topic" id="${id}-question">${question}</p>
       </div>
       <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
-        <button type="button" class="btn item-button btn-primary btn-sm mt-2">Edit</button>
+        <button type="button" id="${id}-edit" class="btn item-button btn-primary btn-sm mt-2">Edit</button>
         <button type="button" id="${id}-answered" class="btn item-button btn-success btn-sm my-2">Answered</button>
       </div>
     </div>
     `
+
   return newListItem
 }
 
@@ -157,62 +194,38 @@ function markAsResolved (id, resolutionMessage, helper) {
   })
 }
 
-function displayArchivedQuestions () {
-  let message = {}
-  database.ref('archive/').on('value', function (snapshot) {
-    let result = snapshot.val()
-    const messageIds = Object.keys(result)
+const {
+  submitMessage,
+  getAllRequests
+} = require('./askify')
 
-    const archive = document.getElementById('archive')
-    archive.innerHTML = ''
-    messageIds.forEach((id, index) => {
-      const item = result[id]
-      console.log(item)
-      let messageText = item.question
+const {
+  displayArchivedQuestions
+} = require('./archive')
 
-      let helper = item.helper
+const {
+  detect,
+  handleSubmitButtonClick
+} = require('./index')
 
-      archive.appendChild(createNewArchiveListItem(id, index + 1, item.name, item.question))
-      const detailsButton = document.getElementById(`${id}-details`)
-      detailsButton.addEventListener('click', e => {
-        if (detailsButton.textContent === 'Details') {
-          detailsButton.textContent = 'Collapse'
-          const detailsDiv = document.createElement('DIV')
-          detailsDiv.id = `${id}-detail-div`
-          detailsDiv.className = 'form-group d-flex row my-2'
-          detailsDiv.innerHTML = `
-              <div class="col-md-10">
-                <p class="element answer text-primary">${messageText}</p>
-              </div>
-              <div class="col-md-2">
-                <p class="element helper text-primary">${helper}</p>
-              </div>
-          `
-          const li = e.target.closest('LI')
-          li.appendChild(detailsDiv)
-          // console.log('button clicked')
-        } else {
-          detailsButton.textContent = 'Details'
-          document.getElementById(`${id}-detail-div`).remove()
-        }
-      })
-    })
-    console.log(message)
-  })
+if (window.location.href.includes('askify.html')) {
+  let repeatUser = window.localStorage.getItem('repeatUser')
+
+  if (repeatUser) {
+    window.location.href = '/pages/askify.html'
+  }
 }
 
-// writeUserData(2, "Stan N.", 'stan@example.com')
+  if (!repeatUser) {
+    window.location.href = '../index.html'
+  }
 
-if (window.route === 'index') {
-  // do login page stuff
-
-} else if (window.route === 'askify') {
   let userInfo = JSON.parse(window.localStorage.getItem('user'))
+  username = userInfo.fname
   const submitButton = document.getElementById('add-request')
   const messageTextField = document.getElementById('message-text')
   const greetingDiv = document.getElementById('greeting')
-
-  greetingDiv.textContent = `Hello, ${userInfo.fname}!`
+  greetingDiv.textContent = `Hello, ${username}!`
 
   submitButton.addEventListener('click', e => {
     let messageText = messageTextField.value
@@ -222,6 +235,30 @@ if (window.route === 'index') {
     }
   })
   getAllRequests()
-} else if (window.route === 'archive') {
+} else if (window.location.href.includes('archive.html')) {
+  let repeatUser = window.localStorage.getItem('repeatUser')
+  if (!repeatUser) {
+    window.location.href = '../index.html'
+  }
+
+  let userInfo = JSON.parse(window.localStorage.getItem('user'))
+  const greetingDiv = document.getElementById('greeting')
+  const queueNum = document.getElementById('queueSpot')
+  queueNum.textContent = window.localStorage.getItem('place')
+  greetingDiv.textContent = `Hello, ${userInfo.fname}!`
   displayArchivedQuestions()
+} else { // default route
+  window.route = '/index.html'
+  let userInfo = {}
+  let submit = document.getElementById('submit')
+  let repeatUser = window.localStorage.getItem('repeatUser')
+  console.log('login?')
+  detect(repeatUser)
+
+  submit.addEventListener('click', function (e) {
+    const success = handleSubmitButtonClick(userInfo)
+    if (success) {
+      window.location.href = '/pages/askify.html'
+    }
+  })
 }
